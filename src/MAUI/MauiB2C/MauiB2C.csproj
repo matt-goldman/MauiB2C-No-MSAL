@@ -49,13 +49,18 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="IdentityModel.OidcClient" Version="5.0.2" />
 	  <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
 	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.1" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\Shared\Shared.csproj" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0-windows10.0.19041.0'">
+	  <PackageReference Include="WinUIEx">
+	    <Version>1.8.0</Version>
+	  </PackageReference>
 	</ItemGroup>
 
 </Project>

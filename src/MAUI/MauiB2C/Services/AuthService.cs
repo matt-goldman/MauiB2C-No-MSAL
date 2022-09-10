@@ -1,6 +1,5 @@
-﻿using IdentityModel.OidcClient;
-using System.IdentityModel.Tokens.Jwt;
-using IBrowser = IdentityModel.OidcClient.Browser.IBrowser;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Web;
 
 namespace MauiB2C.Services;
 
@@ -17,22 +16,24 @@ public class AuthService : IAuthService
 {
     public const string AuthenticatedClient = "AuthenticatedClient";
 
-    public static string RedirectUri { get; set; } = string.Empty;
+    private readonly Uri RedirectUri;
 
-    private readonly OidcClientOptions _options;
+    private readonly Uri AuthUrl;
+    private readonly IAuthenticator _authenticator;
 
-    public AuthService(IBrowser browser)
+    public AuthService(IAuthenticator authenticator, B2COptions options)
     {
-        RedirectUri = "auth.mauib2c://auth";
+        RedirectUri = new Uri(HttpUtility.UrlEncode(options.RedirectUri));
 
-        _options = new OidcClientOptions
-        {
-            Authority = "https://mauib2c.b2clogin.com/mauib2c.onmicrosoft.com/v2.0/.well-known/openid-configuration",
-            ClientId = "6ae54df0-6ae2-4e59-b57d-31b995328353",
-            Scope = "access_as_user",
-            RedirectUri = RedirectUri,
-            Browser = browser
-        };
+        AuthUrl = new Uri($"https://{options.Domain}.b2clogin.com/{options.Domain}.onmicrosoft.com/oauth2/v2.0/authorize?" +
+            $"p={options.Policy}&" +
+            $"client_id={options.ClientId}&" +
+            $"nonce=defaultNonce&" +
+            $"redirct_uri={RedirectUri}&" +
+            $"scope={HttpUtility.UrlEncode(options.Scope)}&" +
+            $"response_type=id_token token&" +
+            $"prompt=login");
+        _authenticator = authenticator;
     }
 
     internal static string AccessToken { get; set; } = String.Empty;
@@ -45,18 +46,10 @@ public class AuthService : IAuthService
     {
         try
         {
-            var oidcClient = new OidcClient(_options);
-
-            var loginResult = await oidcClient.LoginAsync(new LoginRequest());
-
-            if (loginResult.IsError)
-            {
-                // TODO: inspect and handle error
-                return false;
-            }
+            var loginResult = await _authenticator.AuthenticateAsync(AuthUrl, RedirectUri);
 
             await SetRefreshToken(loginResult.RefreshToken);
-            SetLoggedInState(loginResult?.AccessToken ?? String.Empty, loginResult?.IdentityToken ?? string.Empty);
+            SetLoggedInState(loginResult?.AccessToken ?? String.Empty, loginResult?.IdToken ?? string.Empty);
             return true;
         }
         catch (Exception ex)
@@ -84,23 +77,21 @@ public class AuthService : IAuthService
 
     public async Task<bool> RefreshLoginAsync()
     {
-        var oidcClient = new OidcClient(_options);
-
         RefreshToken = await SecureStorage.GetAsync(nameof(RefreshToken));
 
         if (string.IsNullOrEmpty(RefreshToken))
             return false;
 
-        var result = await oidcClient.RefreshTokenAsync(RefreshToken);
+        //var result = await oidcClient.RefreshTokenAsync(RefreshToken);
 
-        if (result.IsError)
-        {
-            // TODO inspect and handle error
-            return false;
-        }
+        //if (result.IsError)
+        //{
+        //    // TODO inspect and handle error
+        //    return false;
+        //}
 
-        await SetRefreshToken(result.RefreshToken);
-        SetLoggedInState(result?.AccessToken ?? String.Empty, result?.IdentityToken ?? string.Empty);
+        //await SetRefreshToken(result.RefreshToken);
+        //SetLoggedInState(result?.AccessToken ?? String.Empty, result?.IdentityToken ?? string.Empty);
         return true;
     }
 
