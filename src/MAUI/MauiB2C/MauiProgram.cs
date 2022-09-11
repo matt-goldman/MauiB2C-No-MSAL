@@ -1,5 +1,4 @@
 ﻿using MauiB2C.Services;
-using System.Web;
 
 namespace MauiB2C
 {
@@ -20,6 +19,8 @@ namespace MauiB2C
 
             builder.Services.AddHttpClient(AuthService.AuthenticatedClient)
                 .AddHttpMessageHandler((s) => s.GetService<AuthHandler>());
+
+            builder.Services.AddHttpClient(AuthService.UnauthenticatedClient);
 
             var options = new B2COptions
             {

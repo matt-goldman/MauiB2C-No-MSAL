@@ -1,4 +1,6 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using MauiB2C.Helpers;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Json;
 
 namespace MauiB2C.Services;
 
@@ -14,14 +16,17 @@ public interface IAuthService
 public class AuthService : IAuthService
 {
     public const string AuthenticatedClient = "AuthenticatedClient";
+    public const string UnauthenticatedClient = "UnauthenticatedClient";
 
     private readonly IAuthenticator _authenticator;
     private readonly B2COptions _options;
+    private readonly HttpClient _httpClient;
 
-    public AuthService(IAuthenticator authenticator, B2COptions options)
+    public AuthService(IAuthenticator authenticator, IHttpClientFactory clientFactory, B2COptions options)
     {
         _authenticator = authenticator;
         _options = options;
+        _httpClient = clientFactory.CreateClient(UnauthenticatedClient);
     }
 
     internal static string AccessToken { get; set; } = String.Empty;
@@ -70,16 +75,12 @@ public class AuthService : IAuthService
         if (string.IsNullOrEmpty(RefreshToken))
             return false;
 
-        //var result = await oidcClient.RefreshTokenAsync(RefreshToken);
+        var refreshUri = B2CHelpers.GenerateRefreshUri(_options, RefreshToken);
 
-        //if (result.IsError)
-        //{
-        //    // TODO inspect and handle error
-        //    return false;
-        //}
+        var result = await _httpClient.GetFromJsonAsync<LoginResult>(refreshUri);
 
-        //await SetRefreshToken(result.RefreshToken);
-        //SetLoggedInState(result?.AccessToken ?? String.Empty, result?.IdentityToken ?? string.Empty);
+        await SetRefreshToken(result.RefreshToken);
+        SetLoggedInState(result?.AccessToken ?? String.Empty, result?.IdToken ?? string.Empty);
         return true;
     }
 

@@ -5,6 +5,13 @@ namespace MauiB2C.Services;
 
 public class Authenticator : IAuthenticator
 {
+    private readonly HttpClient _httpClient;
+
+    public Authenticator(IHttpClientFactory clientFactory)
+    {
+        _httpClient = clientFactory.CreateClient(AuthService.UnauthenticatedClient);
+    }
+
     public async Task<LoginResult> AuthenticateAsync(B2COptions options)
     {
         var codeUri = B2CHelpers.GenerateCodeUri(options);
@@ -15,10 +22,7 @@ public class Authenticator : IAuthenticator
 
         var tokenUri = B2CHelpers.GenerateTokenUri(options, code);
 
-        using (var http = new HttpClient())
-        {
-            var loginResult = await http.GetFromJsonAsync<LoginResult>(tokenUri);
-            return loginResult;
-        }
+        var loginResult = await _httpClient.GetFromJsonAsync<LoginResult>(tokenUri);
+        return loginResult;
     }
 }

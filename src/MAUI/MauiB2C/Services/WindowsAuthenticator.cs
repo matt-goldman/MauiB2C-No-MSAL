@@ -10,13 +10,16 @@ public class WindowsAuthenticator : IAuthenticator
 
     public async Task<LoginResult> AuthenticateAsync(Uri authUri, Uri callbackUri)
     {
+        var codeUri = B2CHelpers.GenerateCodeUri(options);
+
         var result = await WinUIEx.WebAuthenticator.AuthenticateAsync(authUri, callbackUri);
-        return new LoginResult
-        {
-            AccessToken     = result.AccessToken,
-            IdToken         = result.IdToken,
-            RefreshToken    = result.RefreshToken, 
-        };
+
+        var code = result.Properties["code"];
+
+        var tokenUri = B2CHelpers.GenerateTokenUri(options, code);
+
+        var loginResult = await _httpClient.GetFromJsonAsync<LoginResult>(tokenUri);
+        return loginResult;
     }
 }
 #endif
