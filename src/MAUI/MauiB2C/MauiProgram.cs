@@ -17,7 +17,7 @@ namespace MauiB2C
 
             builder.Services.AddSingleton<AuthHandler>();
 
-            builder.Services.AddHttpClient(AuthService.AuthenticatedClient)
+            builder.Services.AddHttpClient(AuthService.AuthenticatedClient, (opt) => opt.BaseAddress = new Uri("https://e3de-159-196-124-207.au.ngrok.io/"))
                 .AddHttpMessageHandler((s) => s.GetService<AuthHandler>());
 
             builder.Services.AddHttpClient(AuthService.UnauthenticatedClient);

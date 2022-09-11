@@ -16,6 +16,53 @@
                 Clicked="Login_Clicked"
                 HorizontalOptions="Center" />
 
+            <CollectionView x:Name="ForecastsCollection"
+                            HorizontalOptions="Center"
+                            HeightRequest="500">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical"
+                                       ItemSpacing="30"/>
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border StrokeShape="RoundRectangle 30"
+                                HeightRequest="100"
+                                WidthRequest="400">
+                            <Border.Background>
+                                <LinearGradientBrush EndPoint="0,1">
+                                    <GradientStop Color="Azure"
+                                                  Offset="0.1" />
+                                    <GradientStop Color="Green"
+                                                  Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Grid RowDefinitions="*,*"
+                                  ColumnDefinitions="*,*">
+                                <Label Grid.Row="0"
+                                       Grid.ColumnSpan="2"
+                                       Text="{Binding Date, StringFormat='{0: dd MMM yyyy}'}"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       HorizontalTextAlignment="Center"
+                                       FontSize="Title"/>
+                                <Label Grid.Row="1"
+                                       Grid.Column="0"
+                                       Text="{Binding TemperatureC, StringFormat='{0}° C'}"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       HorizontalTextAlignment="Center"/>
+                                <Label Grid.Row="1"
+                                       Grid.Column="1"
+                                       Text="{Binding Summary}"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       HorizontalTextAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
             <ActivityIndicator x:Name="RunningIndicator"
                                IsRunning="True"
                                HorizontalOptions="Center"/>

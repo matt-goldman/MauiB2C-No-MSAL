@@ -1,6 +1,7 @@
 ﻿using MauiB2C.Services;
 using MauiB2CNoMsal.Shared;
 using System.Collections.ObjectModel;
+using System.Net.Http.Json;
 
 namespace MauiB2C;
 
@@ -17,6 +18,7 @@ public partial class MainPage : ContentPage
         InitializeComponent();
         _authService = authService;
         _http = clientFactory.CreateClient(AuthService.AuthenticatedClient);
+        ForecastsCollection.ItemsSource = Forecasts;
         RunningIndicator.IsVisible = false;
     }
 
@@ -28,7 +30,13 @@ public partial class MainPage : ContentPage
 
         if (loggedIn)
         {
-            
+            var forecasts = await _http.GetFromJsonAsync<List<WeatherForecast>>("WeatherForecast");
+
+            foreach(var forecast in forecasts)
+            {
+                Forecasts.Add(forecast);
+                LoginButton.IsVisible = false;
+            }
         }
         else
         {
