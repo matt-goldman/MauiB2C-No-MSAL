@@ -15,8 +15,11 @@ public class Authenticator : IAuthenticator
     public async Task<LoginResult> AuthenticateAsync(B2COptions options)
     {
         var codeUri = B2CHelpers.GenerateCodeUri(options);
-
+#if WINDOWS
+        var result = await WinUIEx.WebAuthenticator.AuthenticateAsync(codeUri, new Uri(options.RedirectUri));
+#else
         var result = await WebAuthenticator.AuthenticateAsync(codeUri, new Uri(options.RedirectUri));
+#endif
 
         var code = result.Properties["code"];
 

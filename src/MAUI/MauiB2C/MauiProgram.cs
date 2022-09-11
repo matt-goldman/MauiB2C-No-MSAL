@@ -33,12 +33,7 @@ namespace MauiB2C
 
             builder.Services.AddSingleton(options);
 
-#if WINDOWS
-            builder.Services.AddSingleton<IAuthenticator, WindowsAuthenticator>();
-            Console.WriteLine("[MauiProgram] Windows platform initialised");
-#else
             builder.Services.AddSingleton<IAuthenticator, Authenticator>();
-#endif
 
             builder.Services.AddSingleton<IAuthService, AuthService>();
 
