@@ -1,5 +1,4 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using System.Web;
 
 namespace MauiB2C.Services;
 
@@ -16,24 +15,13 @@ public class AuthService : IAuthService
 {
     public const string AuthenticatedClient = "AuthenticatedClient";
 
-    private readonly Uri RedirectUri;
-
-    private readonly Uri AuthUrl;
     private readonly IAuthenticator _authenticator;
+    private readonly B2COptions _options;
 
     public AuthService(IAuthenticator authenticator, B2COptions options)
     {
-        RedirectUri = new Uri(HttpUtility.UrlEncode(options.RedirectUri));
-
-        AuthUrl = new Uri($"https://{options.Domain}.b2clogin.com/{options.Domain}.onmicrosoft.com/oauth2/v2.0/authorize?" +
-            $"p={options.Policy}&" +
-            $"client_id={options.ClientId}&" +
-            $"nonce=defaultNonce&" +
-            $"redirct_uri={RedirectUri}&" +
-            $"scope={HttpUtility.UrlEncode(options.Scope)}&" +
-            $"response_type=id_token token&" +
-            $"prompt=login");
         _authenticator = authenticator;
+        _options = options;
     }
 
     internal static string AccessToken { get; set; } = String.Empty;
@@ -46,7 +34,7 @@ public class AuthService : IAuthService
     {
         try
         {
-            var loginResult = await _authenticator.AuthenticateAsync(AuthUrl, RedirectUri);
+            var loginResult = await _authenticator.AuthenticateAsync(_options);
 
             await SetRefreshToken(loginResult.RefreshToken);
             SetLoggedInState(loginResult?.AccessToken ?? String.Empty, loginResult?.IdToken ?? string.Empty);

@@ -1,4 +1,5 @@
 ﻿using MauiB2C.Services;
+using System.Web;
 
 namespace MauiB2C
 {
@@ -25,7 +26,7 @@ namespace MauiB2C
                 Domain      = "mauib2c",
                 ClientId    = "6ae54df0-6ae2-4e59-b57d-31b995328353",
                 Policy      = "b2c_1_susi",
-                Scope       = "openid https://mauib2c.onmicrosoft.com/maui-api/access_as_user",
+                Scope       = $"openid offline_access https://mauib2c.onmicrosoft.com/maui-api/access_as_user",
                 RedirectUri = "auth.mauib2c://auth"
             };
 
