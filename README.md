@@ -1,7 +1,7 @@
 # Azure AD  B2C in .NET MAUI *without* MSAL
 Sample demonstrating how you can use AAD B2C in your .NET MAUI apps without using MSAL.
 
-Watch the video:
+Watch the video:    
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=gQoqg4P-uJ0" target="_blank">
  <img src="http://img.youtube.com/vi/gQoqg4P-uJ0/hqdefault.jpg" alt="Watch the video" />
 </a>
