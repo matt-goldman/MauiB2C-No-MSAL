@@ -70,7 +70,12 @@ public class AuthService : IAuthService
 
     public async Task<bool> RefreshLoginAsync()
     {
+        // TODO: Remove this workaround when this issue is resolved: https://github.com/dotnet/maui/issues/8326
+#if MACCATALYST
+        RefreshToken = Preferences.Get(nameof(RefreshToken), string.Empty);
+#else
         RefreshToken = await SecureStorage.GetAsync(nameof(RefreshToken));
+#endif
 
         if (string.IsNullOrEmpty(RefreshToken))
             return false;
@@ -101,13 +106,24 @@ public class AuthService : IAuthService
     private async Task SetRefreshToken(string token)
     {
         RefreshToken = token;
+
+        // TODO: Remove this workaround when this issue is resolved: https://github.com/dotnet/maui/issues/8326
+#if MACCATALYST
+        Preferences.Set(nameof(RefreshToken), RefreshToken);
+#else
         await SecureStorage.SetAsync(nameof(RefreshToken), token);
+#endif
     }
 
     private void ClearTokens()
     {
         RefreshToken = String.Empty;
+        // TODO: Remove this workaround when this issue is resolved: https://github.com/dotnet/maui/issues/8326
+#if MACCATALYST
+        Preferences.Remove(nameof(RefreshToken));
+#else
         SecureStorage.Remove(nameof(RefreshToken));
+#endif
     }
 
     private JwtSecurityToken? ParseToken(string inTtoken)

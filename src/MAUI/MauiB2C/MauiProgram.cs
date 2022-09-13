@@ -17,11 +17,14 @@ namespace MauiB2C
 
             builder.Services.AddSingleton<AuthHandler>();
 
-            builder.Services.AddHttpClient(AuthService.AuthenticatedClient, (opt) => opt.BaseAddress = new Uri("https://e3de-159-196-124-207.au.ngrok.io/"))
+            builder.Services.AddHttpClient(AuthService.AuthenticatedClient, (opt) => 
+                        opt.BaseAddress = new Uri("<Add your API URL here>"))
                 .AddHttpMessageHandler((s) => s.GetService<AuthHandler>());
 
             builder.Services.AddHttpClient(AuthService.UnauthenticatedClient);
 
+            // Replace these with the values from your B2C tenant
+            // Don't forget to update AppSettings.json in your API too
             var options = new B2COptions
             {
                 Domain      = "mauib2c",
