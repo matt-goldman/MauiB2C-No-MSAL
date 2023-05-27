@@ -29,4 +29,12 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+#if DEBUG
+var tunnelUrl = Environment.GetEnvironmentVariable("VS_TUNNEL_URL");
+Console.WriteLine($"Tunnel URL: {tunnelUrl}");
+string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+string filePath = Path.Combine(appDataPath, "vstunnel.txt");
+File.WriteAllText(filePath, tunnelUrl);
+#endif
+
 app.Run();

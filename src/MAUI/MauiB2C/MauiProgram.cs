@@ -18,7 +18,7 @@ namespace MauiB2C
             builder.Services.AddSingleton<AuthHandler>();
 
             builder.Services.AddHttpClient(AuthService.AuthenticatedClient, (opt) => 
-                        opt.BaseAddress = new Uri("<Add your API URL here>"))
+                        opt.BaseAddress = new Uri(Constants.BaseUrl))
                 .AddHttpMessageHandler((s) => s.GetService<AuthHandler>());
 
             builder.Services.AddHttpClient(AuthService.UnauthenticatedClient);
