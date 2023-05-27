@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,10 +32,28 @@ app.MapControllers();
 
 #if DEBUG
 var tunnelUrl = Environment.GetEnvironmentVariable("VS_TUNNEL_URL");
+
 Console.WriteLine($"Tunnel URL: {tunnelUrl}");
+
+var Constants = new
+{
+    BaseUrl = tunnelUrl
+};
+
+var mobileConfig = new
+{
+    Constants = Constants
+};
+
+string appDataFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".mauib2c");
+Directory.CreateDirectory(appDataFolderPath);
+
 string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-string filePath = Path.Combine(appDataPath, "vstunnel.txt");
-File.WriteAllText(filePath, tunnelUrl);
+string filePath = Path.Combine(appDataPath, ".mauib2c", "appsettings.debug.json");
+
+var jsonConfig = JsonSerializer.Serialize(mobileConfig);
+
+File.WriteAllText(filePath, jsonConfig);
 #endif
 
 app.Run();
