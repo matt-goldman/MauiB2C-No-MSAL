@@ -17,7 +17,7 @@ string GetTunnelUrl()
 	}
 	catch(Exception ex)
 	{
-		return ex.Message;
+		return "Could not get tunnel URL";
 	}
 }
 #>
